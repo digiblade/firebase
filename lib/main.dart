@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+import 'Home.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
@@ -34,8 +40,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final TextEditingController userCtrl = TextEditingController();
-
   final TextEditingController passCtrl = TextEditingController();
+  final auth = FirebaseAuth.instance;
 
   bool obscure = true;
 
@@ -66,6 +72,7 @@ class _HomePageState extends State<HomePage> {
                   child: TextField(
                     controller: userCtrl,
                     textAlign: TextAlign.center,
+                    keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
                       hintText: "Username",
                       border: OutlineInputBorder(
@@ -143,7 +150,18 @@ class _HomePageState extends State<HomePage> {
                   width: double.infinity,
                   child: RaisedButton(
                     color: Color(0xff040707),
-                    onPressed: () {},
+                    onPressed: () async {
+                      final newUser = await auth.createUserWithEmailAndPassword(
+                          email: userCtrl.text, password: passCtrl.text);
+                      if (newUser != null) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (BuildContext context) => Home(),
+                          ),
+                        );
+                      }
+                    },
                     child: Text(
                       "Register",
                       style: TextStyle(color: Colors.white),
@@ -156,7 +174,10 @@ class _HomePageState extends State<HomePage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text("Already Have Account?"),
-                      TextButton(onPressed: () {}, child: Text("Sign In"))
+                      TextButton(
+                        onPressed: () {},
+                        child: Text("Sign In"),
+                      )
                     ],
                   ),
                 )
