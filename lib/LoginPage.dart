@@ -1,54 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-
 import 'Home.dart';
-import 'LoginPage.dart';
+import 'main.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  runApp(MyApp());
-}
-
-class MyApp extends StatefulWidget {
-  MyApp({Key key}) : super(key: key);
+class LoginPage extends StatefulWidget {
+  LoginPage({Key key}) : super(key: key);
 
   @override
-  _MyAppState createState() => _MyAppState();
+  _LoginPageState createState() => _LoginPageState();
 }
 
-class _MyAppState extends State<MyApp> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: HomePage(),
-    );
-  }
-}
-
-class HomePage extends StatefulWidget {
-  HomePage({Key key}) : super(key: key);
-
-  @override
-  _HomePageState createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
+class _LoginPageState extends State<LoginPage> {
   final TextEditingController userCtrl = TextEditingController();
   final TextEditingController passCtrl = TextEditingController();
   final auth = FirebaseAuth.instance;
 
   bool obscure = true;
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +33,7 @@ class _HomePageState extends State<HomePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Register",
+                  "Login ",
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -156,9 +123,9 @@ class _HomePageState extends State<HomePage> {
                   child: RaisedButton(
                     color: Color(0xff040707),
                     onPressed: () async {
-                      final newUser = await auth.createUserWithEmailAndPassword(
+                      final newUser = await auth.signInWithEmailAndPassword(
                           email: userCtrl.text, password: passCtrl.text);
-                      print(newUser.additionalUserInfo.profile);
+
                       if (newUser != null) {
                         Navigator.push(
                           context,
@@ -169,7 +136,7 @@ class _HomePageState extends State<HomePage> {
                       }
                     },
                     child: Text(
-                      "Register",
+                      "Login",
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
@@ -179,44 +146,21 @@ class _HomePageState extends State<HomePage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text("Already Have Account?"),
+                      Text("Don't Have Account?"),
                       TextButton(
                         onPressed: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (BuildContext context) => LoginPage(),
+                              builder: (BuildContext context) => MyApp(),
                             ),
                           );
                         },
-                        child: Text("Sign In"),
+                        child: Text("Sign Up"),
                       )
                     ],
                   ),
-                ),
-                if (auth.currentUser != null)
-                  Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text("Continue preveious session"),
-                        TextButton(
-                          onPressed: () {
-                            if (auth.currentUser != null) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (BuildContext conetxt) => Home(),
-                                ),
-                              );
-                            }
-                          },
-                          child: Text("Click here"),
-                        )
-                      ],
-                    ),
-                  ),
+                )
               ],
             ),
           ),
